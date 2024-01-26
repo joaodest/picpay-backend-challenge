@@ -1,9 +1,11 @@
 ﻿using PicpayChallenge.Domain.Entities;
+using PicpayChallenge.Domain.ValueObjects;
+
 
 namespace PicpayChallenge.Application.Interfaces
 {
     public interface IBankingOperations
     {
-        Task Transfer(float value, User user);
+        Task<Transaction> Transfer(string fromUserDocument, string toUserDocument, double amount);
     }
 }

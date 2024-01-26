@@ -1,25 +1,24 @@
 ﻿using PicpayChallenge.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace PicpayChallenge.Domain.ValueObjects
 {
     public class Transaction
     {
-        public Guid TxId { get; set; }
+        [Key]
+        public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid FromUserId { get; set; }
+        public User FromUser { get; set; }  // Propriedade de navegação
+        public Guid ToUserId { get; set; }
+        public User ToUser { get; set; }  // Propriedade de navegação
 
-        public User FromUser { get; set; }
-        public User ToUser { get; set; }
-
-        public Transaction(User fromUser, User toUser)
+        public Transaction(Guid fromUserId, Guid toUserId)
         {
-            TxId = Guid.NewGuid();
+            Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
-            FromUser = fromUser;
-            ToUser = toUser;
-
-            fromUser.Transactions.Add(this);
-            toUser.Transactions.Add(this);
+            FromUserId = fromUserId;
+            ToUserId = toUserId;
         }
-
     }
 }
