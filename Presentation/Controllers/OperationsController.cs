@@ -15,7 +15,7 @@ namespace PicpayChallenge.Presentation.Controllers
         }
 
 
-        [HttpPost("api/transfer")]
+        [HttpPost("api/transactions/transfer")]
 
         public async Task<IActionResult> Transfer(string fromUserDocument, string toUserDocument, double amount)
         {
@@ -29,5 +29,6 @@ namespace PicpayChallenge.Presentation.Controllers
                 return BadRequest(e.Message);
             }
         }
+
     }
 }

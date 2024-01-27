@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PicpayChallenge.Infra;
 
@@ -10,9 +11,11 @@ using PicpayChallenge.Infra;
 namespace PicpayChallenge.Migrations
 {
     [DbContext(typeof(PicpayDbContext))]
-    partial class PicpayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240127140156_AddingAmountToTxTable")]
+    partial class AddingAmountToTxTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,12 +52,12 @@ namespace PicpayChallenge.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f5dd1930-4579-42e3-87b2-98af8242631f"),
+                            Id = new Guid("7f9d0ee1-3908-478a-9735-26f908c1af37"),
                             Balance = 100.0,
                             CPF_CNPJ = "12345678953",
                             Email = "johndoe@example.com",
@@ -64,7 +67,7 @@ namespace PicpayChallenge.Migrations
                         },
                         new
                         {
-                            Id = new Guid("90bb0649-e8ab-464a-902b-765dcf6fead3"),
+                            Id = new Guid("d824c720-3ffa-4e82-a461-3bc136202d5b"),
                             Balance = 100.0,
                             CPF_CNPJ = "12332678921",
                             Email = "janesmith@example.com",
@@ -74,7 +77,7 @@ namespace PicpayChallenge.Migrations
                         },
                         new
                         {
-                            Id = new Guid("36add61c-d461-4e86-89c0-97d515ce8588"),
+                            Id = new Guid("15bda43e-1aaf-4cbb-b236-2cd53582fdab"),
                             Balance = 76400.0,
                             CPF_CNPJ = "98765432132145",
                             Email = "merchant@example.com",
@@ -84,7 +87,7 @@ namespace PicpayChallenge.Migrations
                         },
                         new
                         {
-                            Id = new Guid("53b7061d-f683-4980-878a-be7071120bdd"),
+                            Id = new Guid("e27fed9d-3943-4075-a35e-4a26874bf0c5"),
                             Balance = 0.0,
                             CPF_CNPJ = "56789012334",
                             Email = "normaluser@example.com",
@@ -118,21 +121,21 @@ namespace PicpayChallenge.Migrations
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("Transaction", (string)null);
+                    b.ToTable("Transaction");
                 });
 
             modelBuilder.Entity("PicpayChallenge.Domain.ValueObjects.Transaction", b =>
                 {
                     b.HasOne("PicpayChallenge.Domain.Entities.User", "FromUser")
-                        .WithMany("ToTransactions")
+                        .WithMany("FromTransactions")
                         .HasForeignKey("FromUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PicpayChallenge.Domain.Entities.User", "ToUser")
-                        .WithMany("FromTransactions")
+                        .WithMany("ToTransactions")
                         .HasForeignKey("ToUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FromUser");

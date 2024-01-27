@@ -59,12 +59,26 @@ namespace PicpayChallenge.Presentation.Controllers
             }
         }
 
-        [HttpGet("api/users/{doc}")]
+        [HttpGet("api/users/getbydocument/{doc}")]
         public async Task<IActionResult> GetUserByDocument(string doc)
         {
             try
             {
                 var user = await _userService.GetUserByDocument(doc);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"User not found {e.Message}");
+            }
+        }
+
+        [HttpGet("api/users/transactions")]
+        public async Task<IActionResult> GetUserTransactions(string userDocument)
+        {
+            try
+            {
+                var user = await _userService.GetUserTransactions(userDocument);
                 return Ok(user);
             }
             catch (Exception e)
@@ -80,7 +94,6 @@ namespace PicpayChallenge.Presentation.Controllers
             try
             {
                 var user = await _userService.GetUserByDocument(document);
-                // var user = await _userService.UpdateUser(document, newName, pwd);
                 
                 if (user is null)
                     throw new UserDataException($"Any user found with document: {document}");

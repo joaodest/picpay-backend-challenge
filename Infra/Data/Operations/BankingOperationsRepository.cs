@@ -3,20 +3,32 @@ using PicpayChallenge.Exceptions;
 using PicpayChallenge.Infra.Data.Users;
 using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Domain.Entities;
+using AutoMapper;
+using PicpayChallenge.Application.DTOs;
 
 namespace PicpayChallenge.Infra.Data.Operations
 {
     public class BankingOperationsRepository : IBankingOperationsRepository
     {
         private readonly PicpayDbContext _context;
-        public BankingOperationsRepository(PicpayDbContext context)
+
+        private readonly IMapper _mapper;
+        public BankingOperationsRepository(PicpayDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+        }
+
+        public TransactionDTO GetTransactionDTO(Transaction tx)
+        {
+            var txDto = _mapper.Map<TransactionDTO>(tx);
+            return txDto;
         }
 
         public async Task RevertTransfer(
             User fromUser,
             User toUser,
+            Transaction reversalTx,
             double amount)
         {
             try
@@ -24,7 +36,6 @@ namespace PicpayChallenge.Infra.Data.Operations
                 fromUser.Balance += amount;
                 toUser.Balance -= amount;
 
-                var reversalTx = new Transaction(fromUser.Id, toUser.Id);
                 fromUser.ToTransactions.Remove(reversalTx);
                 toUser.FromTransactions.Remove(reversalTx);
 
@@ -35,17 +46,18 @@ namespace PicpayChallenge.Infra.Data.Operations
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception($"Error finding user: {ex.Message}");
+                throw new Exception($"Error finding user due to {ex.Message}");
             }
             catch (ArgumentNullException ex)
             {
-                throw new Exception($"Invalid argument: {ex.Message}");
+                throw new Exception($"Invalid argument due to {ex.Message}");
             }
         }
 
         public async Task Transfer(
             User fromUser,
             User toUser,
+            Transaction tx,
             double amount)
         {
             try
@@ -53,10 +65,8 @@ namespace PicpayChallenge.Infra.Data.Operations
                 fromUser.Balance -= amount;
                 toUser.Balance += amount;
 
-                var transaction = new Transaction(fromUser.Id, toUser.Id);
-
-                fromUser.ToTransactions.Add(transaction);
-                toUser.FromTransactions.Add(transaction);
+                fromUser.ToTransactions.Add(tx);
+                toUser.FromTransactions.Add(tx);
 
                 _context.Users.Update(fromUser);
                 _context.Users.Update(toUser);
@@ -65,11 +75,11 @@ namespace PicpayChallenge.Infra.Data.Operations
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception($"Error finding user: {ex.Message}");
+                throw new Exception($"Error finding user due to {ex.Message}");
             }
             catch (ArgumentNullException ex)
             {
-                throw new Exception($"Invalid argument: {ex.Message}");
+                throw new Exception($"Invalid argument {ex.Message}");
             }
         }
 

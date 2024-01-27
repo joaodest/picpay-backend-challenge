@@ -13,12 +13,15 @@ namespace PicpayChallenge.Domain.ValueObjects
         public Guid ToUserId { get; set; }
         public User ToUser { get; set; }  // Propriedade de navegação
 
-        public Transaction(Guid fromUserId, Guid toUserId)
+        public double Amount { get; set; }
+
+        public Transaction(Guid fromUserId, Guid toUserId, double amount)
         {
             Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
             FromUserId = fromUserId;
             ToUserId = toUserId;
+            Amount = amount;
         }
     }
 }

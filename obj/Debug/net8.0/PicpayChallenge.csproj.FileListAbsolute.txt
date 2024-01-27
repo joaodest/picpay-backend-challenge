@@ -125,3 +125,5 @@ C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\obj\Debug\net8.0\
 C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\obj\Debug\net8.0\PicpayChallenge.pdb
 C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\obj\Debug\net8.0\PicpayChallenge.genruntimeconfig.cache
 C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\obj\Debug\net8.0\ref\PicpayChallenge.dll
+C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\joaod\source\repos\challenges\backend\PicpayChallenge\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

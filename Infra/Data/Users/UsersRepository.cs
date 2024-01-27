@@ -100,11 +100,10 @@ namespace PicpayChallenge.Infra.Data.Users
 
         public async Task UpdateUser(User user)
         {
+            if (user == null)
+                throw new UserDataException(nameof(user));
             try
             {
-                if (user == null)
-                    throw new UserDataException(nameof(user));
-
                 var userToUpdate = await _context.Users.FindAsync(user.Id);
 
                 if (userToUpdate == null)
@@ -131,5 +130,7 @@ namespace PicpayChallenge.Infra.Data.Users
                 .Replace("-", "")
                 .Replace("/", "");
         }
+
+
     }
 }

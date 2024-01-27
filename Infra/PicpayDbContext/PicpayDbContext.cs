@@ -60,13 +60,16 @@ namespace PicpayChallenge.Infra
 
             modelBuilder.Entity<Transaction>()
                 .HasOne(t => t.FromUser)
-                .WithMany(u => u.FromTransactions)
-                .HasForeignKey(t => t.FromUserId);
+                .WithMany(u => u.ToTransactions) 
+                .HasForeignKey(t => t.FromUserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Transaction>()
                 .HasOne(t => t.ToUser)
-                .WithMany(u => u.ToTransactions)
-                .HasForeignKey(t => t.ToUserId);
+                .WithMany(u => u.FromTransactions) 
+                .HasForeignKey(t => t.ToUserId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
 
             base.OnModelCreating(modelBuilder);
         }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PicpayChallenge.Infra;
 
@@ -10,9 +11,11 @@ using PicpayChallenge.Infra;
 namespace PicpayChallenge.Migrations
 {
     [DbContext(typeof(PicpayDbContext))]
-    partial class PicpayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240127143304_SplittingTxsHist")]
+    partial class SplittingTxsHist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace PicpayChallenge.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -118,7 +121,7 @@ namespace PicpayChallenge.Migrations
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("Transaction", (string)null);
+                    b.ToTable("Transaction");
                 });
 
             modelBuilder.Entity("PicpayChallenge.Domain.ValueObjects.Transaction", b =>

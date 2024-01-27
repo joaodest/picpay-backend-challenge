@@ -3,6 +3,7 @@ using PicpayChallenge.Application.Interfaces;
 using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Helpers;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PicpayChallenge.Domain.Entities
 {
