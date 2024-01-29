@@ -1,5 +1,4 @@
 ﻿using PicpayChallenge.Domain.Entities;
-using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Presentation.DTOs;
 
 

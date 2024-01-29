@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using PicpayChallenge.Application.DTOs;
 using PicpayChallenge.Domain.Entities;
 using PicpayChallenge.Domain.Interfaces;
-using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Exceptions;
 using PicpayChallenge.Helpers;
+using PicpayChallenge.Infra.Data.Operations;
 using PicpayChallenge.Infra.Data.Users;
 using PicpayChallenge.Presentation.DTOs;
 
@@ -13,12 +14,17 @@ namespace PicpayChallenge.Domain.Services
     public class UserService : IUserService
     {
         private readonly IUsersRepository _usersRepository;
+        private readonly IBankingOperationsRepository _bankingRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUsersRepository usersRepository, IMapper mapper)
+        public UserService(
+            IUsersRepository usersRepository,
+            IMapper mapper,
+            IBankingOperationsRepository bankingRepository)
         {
             _usersRepository = usersRepository;
             _mapper = mapper;
+            _bankingRepository = bankingRepository;
         }
 
         public async Task<UserDTO> CreateUser(string name,
@@ -32,6 +38,8 @@ namespace PicpayChallenge.Domain.Services
                 HandleDocuments handleDocuments = new(document);
                 string formattedDocument = handleDocuments.GetDocument();
 
+
+
                 var user = new User
                 {
                     Id = Guid.NewGuid(),
@@ -40,7 +48,8 @@ namespace PicpayChallenge.Domain.Services
                     Password = pwd,
                     CPF_CNPJ = formattedDocument,
                     Balance = initialAmount,
-
+                    FromTransactions = new List<Transaction>(),
+                    ToTransactions = new List<Transaction>(),
                     UserType = formattedDocument.Length == 11
                     ? UserType.Normal
                     : UserType.Logista
@@ -145,9 +154,9 @@ namespace PicpayChallenge.Domain.Services
         {
             var user = await _usersRepository.GetByDocument(userDocument);
 
-            var txList = user.FromTransactions;
+            var txList = user.FromTransactions.ToList();
 
-            return (List<Transaction>)txList;
+            return txList;
         }
     }
 }

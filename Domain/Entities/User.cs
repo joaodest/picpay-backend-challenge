@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PicpayChallenge.Application.DTOs;
 using PicpayChallenge.Application.Interfaces;
-using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -21,8 +21,8 @@ namespace PicpayChallenge.Domain.Entities
         public double Balance { get; set; } = 0.0;
         [Required]
         public string CPF_CNPJ { get; set; }
-        public ICollection<Transaction> FromTransactions { get; set; } = new List<Transaction>();
-        public ICollection<Transaction> ToTransactions { get; set; } = new List<Transaction>();
+        public List<Transaction> FromTransactions { get; set; }  = new List<Transaction>();
+        public List<Transaction> ToTransactions { get; set; } = new List<Transaction>();
 
         public UserType UserType { get; set; }
 

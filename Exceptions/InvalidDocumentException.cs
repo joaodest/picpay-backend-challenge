@@ -1,6 +1,6 @@
 ﻿namespace PicpayChallenge.Exceptions
 {
-    public class InvalidDocumentException : Exception
+    public class InvalidDocumentException : TransactionDataException
     {
         public InvalidDocumentException(string? message) : base(message) { }
 

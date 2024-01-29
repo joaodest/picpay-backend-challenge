@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Routing;
 using PicpayChallenge.Application.DTOs;
 using PicpayChallenge.Application.Interfaces;
 using PicpayChallenge.Domain.Entities;
-using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Exceptions;
 using PicpayChallenge.Helpers;
 using PicpayChallenge.Infra.Data.Operations;
@@ -32,6 +31,65 @@ namespace PicpayChallenge.Application.Services
 
         }
 
+        public async Task<Transaction> CreateTransaction(Guid fromUserId, Guid toUserId, double amount)
+        {
+            User fromUser = await _repository.GetById(fromUserId);
+            User toUser = await _repository.GetById(toUserId);
+            try
+            {
+                var tx = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    FromUserId = fromUserId,
+                    FromUser = fromUser,
+                    ToUserId = toUserId,
+                    ToUser = toUser,
+                    Amount = amount
+                };
+
+                await _bankingOperations.AddTx(tx);
+
+                return tx;
+            }
+            catch (Exception e) when (e is UserDataException || e is TransactionDataException)
+            {
+                throw;
+            }
+        }
+
+        public Task<ICollection<Transaction>> GetTransactions()
+        {
+
+            return _bankingOperations.GetTxs();
+        }
+
+        public async Task<Transaction> GetTransaction(Guid id)
+        {
+            var tx = await _bankingOperations.GetTxById(id);
+
+            if (tx == null)
+                throw new TransactionDataException($"Transaction not found");
+
+            return tx;
+        }
+
+
+        public async Task<Transaction> DeleteTransaction(Guid id)
+        {
+            try
+            {
+                var tx = await _bankingOperations.GetTxById(id);
+                await _bankingOperations.DeleteTx(id);
+
+                return tx;
+            }
+            catch (Exception e)
+            {
+                throw new TransactionDataException($"Error when deleting transaction {e.Message}");
+            }
+        }
+
         public TransactionDTO GetTransactionDTO(Transaction tx)
         {
             var txDto = _mapper.Map<TransactionDTO>(tx);
@@ -58,22 +116,19 @@ namespace PicpayChallenge.Application.Services
             if (!IsValidAmount(fromUser, amount))
                 throw new UserDataException($"Insuficient amount");
 
-            Transaction tx = new(fromUser.Id, toUser.Id, amount);
+            var resp = await _httpClient.GetAsync("https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc");
+            var content = await resp.Content.ReadAsStringAsync();
 
+
+            if (!resp.IsSuccessStatusCode || !content.Contains("Autorizado"))
+            {
+                throw new UnauthorizedException("Unauthorized transaction");
+            }
+
+            var tx = await CreateTransaction(fromUser.Id, toUser.Id, amount);
             try
             {
-                tx = await RealizeTransfer(fromUser, toUser, tx, amount);
-
-                var resp = await _httpClient.GetAsync($"https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc");
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    await RevertTransfer(tx, amount);
-                    var content = await resp.Content.ReadAsStringAsync();
-                    if (!content.Contains("Autorizado"))
-                        throw new UnauthorizedException(
-                                        $"Unable to execute transaction due to {resp.Content.ReadAsStringAsync().Result}");
-                }
+                tx = await RealizeTransfer(tx, amount);
 
                 var txDto = GetTransactionDTO(tx);
 
@@ -85,8 +140,6 @@ namespace PicpayChallenge.Application.Services
                 throw;
             }
         }
-
-
 
         private static bool IsLogista(User fromUser)
         {
@@ -105,11 +158,11 @@ namespace PicpayChallenge.Application.Services
             }
             return true;
         }
-        private async Task<Transaction> RealizeTransfer(User fromUser, User toUser, Transaction tx, double amount)
+        private async Task<Transaction> RealizeTransfer(Transaction tx, double amount)
         {
             try
             {
-                await _bankingOperations.Transfer(fromUser, toUser, tx, amount);
+                await _bankingOperations.Transfer(tx, amount);
 
                 return tx;
             }
@@ -121,17 +174,17 @@ namespace PicpayChallenge.Application.Services
 
         private async Task RevertTransfer(Transaction tx, double amount)
         {
-            var fromUser = tx.FromUser;
-            var toUser = tx.ToUser;
+
             try
             {
-                await _bankingOperations.RevertTransfer(fromUser, toUser, tx, amount);
+                await _bankingOperations.RevertTransfer(tx, amount);
             }
             catch (Exception e)
             {
                 throw new Exception($"Error on transfer {e.Message}");
             }
         }
+
 
     }
 }

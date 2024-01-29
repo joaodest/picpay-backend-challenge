@@ -1,6 +1,6 @@
 ﻿namespace PicpayChallenge.Exceptions
 {
-    public class UserDataException : Exception
+    public class UserDataException : TransactionDataException
     {
         public UserDataException(string? message) : base(message) { }
 

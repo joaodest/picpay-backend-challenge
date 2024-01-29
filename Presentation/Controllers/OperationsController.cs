@@ -14,6 +14,51 @@ namespace PicpayChallenge.Presentation.Controllers
             _bankingOperations = bankingOperations;
         }
 
+        [HttpGet("api/transactions")]
+        public async Task<IActionResult> GetTransactions()
+        {
+            try
+            {
+                var txs = await _bankingOperations.GetTransactions();
+                return Ok(txs);
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Error: {e.Message}");
+            }
+        }
+
+        [HttpGet("api/transactions/{id}")]
+        public async Task<IActionResult> GetTransactionById(Guid id)
+        {
+            try
+            {
+                var tx = await _bankingOperations.GetTransaction(id);
+                return Ok(tx);
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Error: {e.Message}");
+            }
+        }
+
+
+
+        [HttpDelete("api/transactions/{id}")]
+        public async Task<IActionResult> DeleteTransaction(Guid id)
+        {
+            try
+            {
+
+                await _bankingOperations.DeleteTransaction(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Error: {e.Message}");
+            }
+        }
+
 
         [HttpPost("api/transactions/transfer")]
 
@@ -26,7 +71,7 @@ namespace PicpayChallenge.Presentation.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest($"Error {e.Message}");
             }
         }
 

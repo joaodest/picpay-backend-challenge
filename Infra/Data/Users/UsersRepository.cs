@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PicpayChallenge.Application.Services;
 using PicpayChallenge.Domain.Entities;
-using PicpayChallenge.Domain.ValueObjects;
 using PicpayChallenge.Exceptions;
 using PicpayChallenge.Helpers;
+using PicpayChallenge.Presentation.DTOs;
 
 namespace PicpayChallenge.Infra.Data.Users
 {
@@ -17,11 +17,14 @@ namespace PicpayChallenge.Infra.Data.Users
         }
         public async Task AddUser(User user)
         {
+            if (user == null)
+                throw new UserDataException(nameof(user));
+
+            if (IsDocAlreadyRegistered(user.CPF_CNPJ))
+                throw new UserDataException("Document already registered.");
+
             try
             {
-                if (user == null)
-                    throw new UserDataException(nameof(user));
-
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
@@ -29,6 +32,15 @@ namespace PicpayChallenge.Infra.Data.Users
             {
                 throw new UserDataException(e.Message);
             }
+        }
+
+        private bool IsDocAlreadyRegistered(string CPF_CNPJ)
+        {
+            bool isRegistered = _context.Users.Any(x => x.CPF_CNPJ == CPF_CNPJ);
+
+            if (isRegistered)
+                return true;
+            return false;
         }
 
         public async Task DeleteUser(Guid id)
@@ -52,21 +64,36 @@ namespace PicpayChallenge.Infra.Data.Users
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            var users = await _context.Users.ToListAsync();
+            try
+            {
+                var users = await _context.Users.ToListAsync();
 
-            return users;
+                foreach (var user in users)
+                {
+                    await GetById(user.Id);
+                }
+
+                return users;
+            }
+            catch (Exception e)
+            {
+                throw new UserDataException(e.Message);
+            }
         }
 
         public async Task<User> GetById(Guid id)
         {
             try
             {
-                var user = _context.Users.FirstOrDefault(x => x.Id == id);
+                var user = await _context.Users
+                     .Include(u => u.ToTransactions)
+                     .Include(u => u.FromTransactions)
+                     .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (user == null)
                     throw new UserDataException(nameof(user));
 
-                return await Task.FromResult(user);
+                return user;
             }
             catch (Exception e)
             {
@@ -76,20 +103,20 @@ namespace PicpayChallenge.Infra.Data.Users
 
         public async Task<User> GetByDocument(string doc)
         {
+            if (string.IsNullOrEmpty(doc))
+                throw new UserDataException(nameof(doc));
             try
             {
-                if (string.IsNullOrEmpty(doc))
-                    throw new UserDataException(nameof(doc));
-
                 string formattedDoc = FormatDocument(doc);
 
-                var user = _context.Users
-                    .FirstOrDefault(x => x.CPF_CNPJ == formattedDoc);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.CPF_CNPJ == formattedDoc);
 
                 if (user == null)
                     throw new UserDataException(nameof(user));
 
-                return await Task.FromResult(user);
+                await GetById(user.Id);
+
+                return user;
 
             }
             catch (Exception e)
@@ -104,7 +131,7 @@ namespace PicpayChallenge.Infra.Data.Users
                 throw new UserDataException(nameof(user));
             try
             {
-                var userToUpdate = await _context.Users.FindAsync(user.Id);
+                var userToUpdate = await GetById(user.Id);
 
                 if (userToUpdate == null)
                     throw new UserDataException("User not found.");

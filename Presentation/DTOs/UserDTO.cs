@@ -1,5 +1,6 @@
 ﻿using PicpayChallenge.Application.DTOs;
-using PicpayChallenge.Domain.ValueObjects;
+using PicpayChallenge.Helpers;
+
 
 namespace PicpayChallenge.Presentation.DTOs
 {
@@ -10,6 +11,7 @@ namespace PicpayChallenge.Presentation.DTOs
         public string Email { get; set; } = string.Empty;
         public string Document { get; set; } = string.Empty;
         public double Amount { get; set; } = 0.0;
+        public UserType UserType { get; set; }
         public ICollection<TransactionDTO> SentTxs { get; set; } 
             = new List<TransactionDTO>()
             .OrderByDescending(t => t.CreatedAt)

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using PicpayChallenge.Application.DTOs;
-using PicpayChallenge.Domain.ValueObjects;
+using PicpayChallenge.Domain.Entities;
 
 namespace PicpayChallenge.Application.ObjectMapper
 {

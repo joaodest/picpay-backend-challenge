@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PicpayChallenge.Infra;
 
@@ -10,9 +11,11 @@ using PicpayChallenge.Infra;
 namespace PicpayChallenge.Migrations
 {
     [DbContext(typeof(PicpayDbContext))]
-    partial class PicpayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240128021954_TransactionMovedToDomain")]
+    partial class TransactionMovedToDomain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

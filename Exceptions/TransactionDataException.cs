@@ -1,11 +1,11 @@
 ﻿namespace PicpayChallenge.Exceptions
 {
-    public class UnauthorizedException : TransactionDataException
+    public class TransactionDataException : Exception
     {
-        public UnauthorizedException(string? message) : base(message) { }
+        public TransactionDataException(string? message) : base(message) { }
 
         public static void Throw(string? message)
-            => throw new UnauthorizedException(message);
+            => throw new TransactionDataException(message);
 
         public static void ThrowIfNull(object? obj)
         {
