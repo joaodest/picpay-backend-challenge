@@ -48,8 +48,6 @@ namespace PicpayChallenge
             builder.Services.AddScoped<IUserService, UserService>();
 
             
-
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -63,6 +61,12 @@ namespace PicpayChallenge
 
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<PicpayDbContext>();
+                context.Database.Migrate();
+            }
 
             app.Run();
         }

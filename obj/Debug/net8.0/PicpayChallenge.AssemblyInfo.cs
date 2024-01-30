@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PicpayChallenge")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb160a92ffb40bdaf35dc7042687dd1ebf724eeb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+32583e59af107d0666ed6b5096f3cae89d1a245c")]
 [assembly: System.Reflection.AssemblyProductAttribute("PicpayChallenge")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PicpayChallenge")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
